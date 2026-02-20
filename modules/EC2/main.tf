@@ -34,6 +34,7 @@ resource "aws_security_group" "react_sg" {
   tags = { Name = var.sg_name }
 }
 
+# EC2 Instance
 resource "aws_instance" "react_server" {
   ami                    = var.ami
   instance_type          = var.instance_type
@@ -63,9 +64,11 @@ resource "aws_instance" "react_server" {
     ansible-playbook -i localhost, -c local playbook.yml
   EOF
 
-  # Force recreation of the instance when repo_version changes
-  triggers = {
-    repo_version = var.repo_version
+  lifecycle {
+    # Force instance replacement whenever repo_version changes
+    replace_triggered_by = [
+      var.repo_version
+    ]
   }
 
   tags = { Name = var.instance_name }
