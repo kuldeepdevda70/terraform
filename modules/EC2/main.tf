@@ -34,6 +34,13 @@ resource "aws_security_group" "react_sg" {
   tags = { Name = var.sg_name }
 }
 
+# Null resource to trigger EC2 recreation on repo_version change
+resource "null_resource" "force_ec2_recreate" {
+  triggers = {
+    repo_version = var.repo_version
+  }
+}
+
 # EC2 Instance
 resource "aws_instance" "react_server" {
   ami                    = var.ami
@@ -64,12 +71,8 @@ resource "aws_instance" "react_server" {
     ansible-playbook -i localhost, -c local playbook.yml
   EOF
 
-  lifecycle {
-    # Force instance replacement whenever repo_version changes
-    replace_triggered_by = [
-      var.repo_version
-    ]
-  }
+  # Force EC2 recreation if repo_version changes
+  depends_on = [null_resource.force_ec2_recreate]
 
   tags = { Name = var.instance_name }
 }
