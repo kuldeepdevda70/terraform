@@ -42,19 +42,27 @@ resource "aws_instance" "react_server" {
 
 
 user_data = <<-EOF
-              #!/bin/bash
-              set -e
+  #!/bin/bash
+  set -e
 
-              sudo apt update -y
-              sudo apt install -y git software-properties-common
+  # Update & install dependencies
+  sudo apt update -y
+  sudo apt install -y git software-properties-common
 
-              sudo add-apt-repository --yes --update ppa:ansible/ansible
-              sudo apt install -y ansible
+  # Install Ansible
+  sudo add-apt-repository --yes --update ppa:ansible/ansible
+  sudo apt install -y ansible
 
-              git clone -b ${var.repo_version} ${var.ansible_repo} /home/ubuntu/app
-              cd /home/ubuntu/app
-              ansible-playbook -i localhost, -c local playbook.yml
-              EOF
+  # Clean old app folder if exists
+  rm -rf /home/ubuntu/app
+
+  # Clone dynamic repo version
+  git clone -b ${var.repo_version} ${var.ansible_repo} /home/ubuntu/app
+  cd /home/ubuntu/app
+
+  # Run ansible and stream output to console
+  ansible-playbook -i localhost, -c local playbook.yml
+EOF
 
   tags = { Name = var.instance_name }
   
