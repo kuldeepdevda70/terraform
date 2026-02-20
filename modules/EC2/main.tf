@@ -40,37 +40,33 @@ resource "aws_instance" "react_server" {
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.react_sg.id]
 
+  user_data = <<-EOF
+    #!/bin/bash
+    set -e
 
-user_data = <<-EOF
-  #!/bin/bash
-  set -e
+    # Update & install dependencies
+    sudo apt update -y
+    sudo apt install -y git software-properties-common
 
-  # Update & install dependencies
-  sudo apt update -y
-  sudo apt install -y git software-properties-common
+    # Install Ansible
+    sudo add-apt-repository --yes --update ppa:ansible/ansible
+    sudo apt install -y ansible
 
-  # Install Ansible
-  sudo add-apt-repository --yes --update ppa:ansible/ansible
-  sudo apt install -y ansible
+    # Clean old app folder if exists
+    rm -rf /home/ubuntu/app
 
-  # Clean old app folder if exists
-  rm -rf /home/ubuntu/app
+    # Clone dynamic repo version
+    git clone -b "${var.repo_version}" "${var.ansible_repo}" /home/ubuntu/app
+    cd /home/ubuntu/app
 
-  # Clone dynamic repo version
-  git clone -b ${var.repo_version} ${var.ansible_repo} /home/ubuntu/app
-  cd /home/ubuntu/app
+    # Run ansible and stream output to console
+    ansible-playbook -i localhost, -c local playbook.yml
+  EOF
 
-  # Run ansible and stream output to console
-  ansible-playbook -i localhost, -c local playbook.yml
-EOF
+  # Force recreation of the instance when repo_version changes
+  triggers = {
+    repo_version = var.repo_version
+  }
 
   tags = { Name = var.instance_name }
-  
 }
-
-
-
-
-
-
-
