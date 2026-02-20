@@ -7,6 +7,7 @@ module "ec2_server" {
   instance_name = "react-server"
   sg_name       = "react-sg"
   ansible_repo  = var.ansible_repo  
+   repo_version  = var.repo_version  
 }
 
 # Outputs

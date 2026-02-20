@@ -59,3 +59,10 @@ user_data = <<-EOF
   tags = { Name = var.instance_name }
   
 }
+
+
+
+
+
+
+
