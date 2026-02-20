@@ -52,6 +52,8 @@ resource "aws_instance" "react_server" {
     #!/bin/bash
     set -e
 
+    echo "Repo version: ${var.repo_version}" > /home/ubuntu/repo_version.txt
+
     # Update & install dependencies
     sudo apt update -y
     sudo apt install -y git software-properties-common
@@ -73,6 +75,11 @@ resource "aws_instance" "react_server" {
 
   # Force EC2 recreation if repo_version changes
   depends_on = [null_resource.force_ec2_recreate]
+
+  # Ensure Terraform destroys before creating new instance
+  lifecycle {
+    create_before_destroy = true
+  }
 
   tags = { Name = var.instance_name }
 }
