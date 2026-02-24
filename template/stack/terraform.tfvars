@@ -10,4 +10,7 @@ instance_type = "t3.micro"
 key_name      = "test"
 
 ansible_repo = "https://github.com/kuldeepdevda70/EC2.git"
-repo_version = "v5.0.0.1"
+
+blue_version  = "v5.0.0.1"
+green_version = "v5.0.0"
+active_color  = "green"
