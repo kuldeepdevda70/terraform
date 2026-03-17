@@ -15,4 +15,4 @@ ansible_repo = "https://github.com/kuldeepdevda70/EC2.git"
 
 blue_version  = "v5.0.0.1"
 green_version = "v5.0.0"
-active_color  = "green"
+active_color  = "blue"
